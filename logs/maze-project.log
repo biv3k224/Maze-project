@@ -330,3 +330,65 @@ Update your application's configuration
 2025-01-09T23:17:19.696-05:00  INFO 8860 --- [maze-project] [main] n.b.m.m.MazeProjectApplicationTests      : The following 1 profile is active: "prod"
 2025-01-09T23:17:22.278-05:00  WARN 8860 --- [maze-project] [main] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
 2025-01-09T23:17:22.498-05:00  INFO 8860 --- [maze-project] [main] n.b.m.m.MazeProjectApplicationTests      : Started MazeProjectApplicationTests in 3.588 seconds (process running for 5.934)
+2025-01-09T23:20:08.011-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Starting MazeProjectApplication using Java 21.0.1 with PID 13148 (C:\Users\aarat\Downloads\maze-project\target\classes started by aarat in C:\Users\aarat\Downloads\maze-project)
+2025-01-09T23:20:08.018-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : The following 1 profile is active: "prod"
+2025-01-09T23:20:08.149-05:00  INFO 13148 --- [maze-project] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-01-09T23:20:08.151-05:00  INFO 13148 --- [maze-project] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-01-09T23:20:10.992-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-01-09T23:20:11.034-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-01-09T23:20:11.035-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-01-09T23:20:11.147-05:00  INFO 13148 --- [maze-project] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-01-09T23:20:11.148-05:00  INFO 13148 --- [maze-project] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2996 ms
+2025-01-09T23:20:11.889-05:00  WARN 13148 --- [maze-project] [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-01-09T23:20:12.085-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-01-09T23:20:12.179-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-01-09T23:20:12.219-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Started MazeProjectApplication in 5.298 seconds (process running for 6.294)
+2025-01-09T23:20:33.144-05:00  INFO 13148 --- [maze-project] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 5 class path changes (0 additions, 4 deletions, 1 modification)
+2025-01-09T23:20:33.173-05:00  INFO 13148 --- [maze-project] [Thread-5] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-01-09T23:20:33.203-05:00  INFO 13148 --- [maze-project] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-01-09T23:20:33.395-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Starting MazeProjectApplication using Java 21.0.1 with PID 13148 (C:\Users\aarat\Downloads\maze-project\target\classes started by aarat in C:\Users\aarat\Downloads\maze-project)
+2025-01-09T23:20:33.396-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : The following 1 profile is active: "prod"
+2025-01-09T23:20:34.402-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-01-09T23:20:34.405-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-01-09T23:20:34.406-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-01-09T23:20:34.494-05:00  INFO 13148 --- [maze-project] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-01-09T23:20:34.495-05:00  INFO 13148 --- [maze-project] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1091 ms
+2025-01-09T23:20:34.897-05:00  WARN 13148 --- [maze-project] [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-01-09T23:20:34.987-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-01-09T23:20:35.013-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-01-09T23:20:35.025-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Started MazeProjectApplication in 1.719 seconds (process running for 29.099)
+2025-01-09T23:20:35.041-05:00  INFO 13148 --- [maze-project] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-01-09T23:20:37.463-05:00  INFO 13148 --- [maze-project] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 4 class path changes (4 additions, 0 deletions, 0 modifications)
+2025-01-09T23:20:37.485-05:00  INFO 13148 --- [maze-project] [Thread-7] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-01-09T23:20:37.502-05:00  INFO 13148 --- [maze-project] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-01-09T23:20:37.835-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Starting MazeProjectApplication using Java 21.0.1 with PID 13148 (C:\Users\aarat\Downloads\maze-project\target\classes started by aarat in C:\Users\aarat\Downloads\maze-project)
+2025-01-09T23:20:37.836-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : The following 1 profile is active: "prod"
+2025-01-09T23:20:38.475-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-01-09T23:20:38.478-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-01-09T23:20:38.478-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-01-09T23:20:38.541-05:00  INFO 13148 --- [maze-project] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-01-09T23:20:38.543-05:00  INFO 13148 --- [maze-project] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 697 ms
+2025-01-09T23:20:38.752-05:00  WARN 13148 --- [maze-project] [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-01-09T23:20:38.795-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-01-09T23:20:38.814-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-01-09T23:20:38.820-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Started MazeProjectApplication in 1.191 seconds (process running for 32.894)
+2025-01-09T23:20:38.823-05:00  INFO 13148 --- [maze-project] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-01-09T23:20:45.295-05:00  INFO 10788 --- [maze-project] [main] n.b.m.m.MazeProjectApplicationTests      : Starting MazeProjectApplicationTests using Java 21.0.1 with PID 10788 (started by aarat in C:\Users\aarat\Downloads\maze-project)
+2025-01-09T23:20:45.299-05:00  INFO 10788 --- [maze-project] [main] n.b.m.m.MazeProjectApplicationTests      : The following 1 profile is active: "prod"
+2025-01-09T23:20:50.499-05:00  WARN 10788 --- [maze-project] [main] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-01-09T23:20:50.733-05:00  INFO 10788 --- [maze-project] [main] n.b.m.m.MazeProjectApplicationTests      : Started MazeProjectApplicationTests in 7.021 seconds (process running for 10.523)
+2025-01-09T23:37:44.091-05:00  INFO 13148 --- [maze-project] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 3 class path changes (3 additions, 0 deletions, 0 modifications)
+2025-01-09T23:37:44.210-05:00  INFO 13148 --- [maze-project] [Thread-11] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-01-09T23:37:44.264-05:00  INFO 13148 --- [maze-project] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-01-09T23:37:44.767-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Starting MazeProjectApplication using Java 21.0.1 with PID 13148 (C:\Users\aarat\Downloads\maze-project\target\classes started by aarat in C:\Users\aarat\Downloads\maze-project)
+2025-01-09T23:37:44.770-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : The following 1 profile is active: "prod"
+2025-01-09T23:37:45.410-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-01-09T23:37:45.420-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-01-09T23:37:45.427-05:00  INFO 13148 --- [maze-project] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-01-09T23:37:45.484-05:00  INFO 13148 --- [maze-project] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-01-09T23:37:45.485-05:00  INFO 13148 --- [maze-project] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 703 ms
+2025-01-09T23:37:45.655-05:00  WARN 13148 --- [maze-project] [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-01-09T23:37:45.699-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-01-09T23:37:45.723-05:00  INFO 13148 --- [maze-project] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-01-09T23:37:45.740-05:00  INFO 13148 --- [maze-project] [restartedMain] n.b.m.m.MazeProjectApplication           : Started MazeProjectApplication in 1.081 seconds (process running for 1059.815)
+2025-01-09T23:37:45.745-05:00  INFO 13148 --- [maze-project] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
