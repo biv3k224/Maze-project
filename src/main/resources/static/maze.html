@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Generator and Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .maze-container {
+            display: grid;
+            justify-content: center;
+            margin-top: 20px;
+            grid-gap: 0;
+        }
+
+        .cell {
+            width: 25px;
+            height: 25px;
+            background-color: #fff;
+            border: none;
+        }
+
+        .cell.wall-top {
+            border-top: 2px solid black;
+        }
+
+        .cell.wall-left {
+            border-left: 2px solid black;
+        }
+
+        .cell.start {
+            background-color: green;
+        }
+
+        .cell.end {
+            background-color: blue;
+        }
+
+        .cell.path {
+            background-color: red;
+            animation: animate-path 0.3s ease forwards;
+        }
+
+        @keyframes animate-path {
+            from {
+                background-color: white;
+            }
+            to {
+                background-color: red;
+            }
+        }
+
+        button {
+            margin: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Maze Generator and Solver</h1>
+    <label for="rows">Rows:</label>
+    <input type="number" id="rows" value="10" min="1">
+    <label for="cols">Columns:</label>
+    <input type="number" id="cols" value="10" min="1">
+    <br>
+    <button onclick="generateMaze()">Generate Maze</button>
+    <button onclick="solveMaze()">Solve Maze</button>
+    <div id="maze-container" class="maze-container"></div>
+
+    <script>
+        let currentMaze = null;
+
+        async function generateMaze() {
+            const rows = document.getElementById("rows").value;
+            const cols = document.getElementById("cols").value;
+
+            try {
+                const response = await fetch(`/maze/generate?rows=${rows}&cols=${cols}`, { method: "POST" });
+                if (response.ok) {
+                    currentMaze = await response.json();
+                    renderMaze(currentMaze);
+                } else {
+                    alert("Failed to generate maze.");
+                }
+            } catch (error) {
+                console.error("Error generating maze:", error);
+                alert("An error occurred while generating the maze.");
+            }
+        }
+
+        async function solveMaze() {
+            if (!currentMaze) {
+                alert("No maze generated yet!");
+                return;
+            }
+
+            try {
+                const response = await fetch("/maze/solve", { method: "POST" });
+                if (response.ok) {
+                    const solution = await response.json();
+                    renderSolution(solution);
+                } else {
+                    alert("Failed to solve maze.");
+                }
+            } catch (error) {
+                console.error("Error solving maze:", error);
+                alert("An error occurred while solving the maze.");
+            }
+        }
+
+        function renderMaze(maze) {
+            const mazeContainer = document.getElementById("maze-container");
+            mazeContainer.innerHTML = "";
+            mazeContainer.style.gridTemplateColumns = `repeat(${maze.cols}, 25px)`;
+
+            for (let r = 0; r < maze.rows; r++) {
+                for (let c = 0; c < maze.cols; c++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+
+                    if (maze.horizontalWalls[r][c]) cell.classList.add("wall-top");
+                    if (maze.verticalWalls[r][c]) cell.classList.add("wall-left");
+                    if (r === 0 && c === 0) cell.classList.add("start");
+                    if (r === maze.rows - 1 && c === maze.cols - 1) cell.classList.add("end");
+
+                    mazeContainer.appendChild(cell);
+                }
+            }
+        }
+
+        function renderSolution(solution) {
+            const mazeContainer = document.getElementById("maze-container");
+            const cells = mazeContainer.querySelectorAll(".cell");
+            let delay = 0;
+
+            for (let r = 0; r < solution.length; r++) {
+                for (let c = 0; c < solution[0].length; c++) {
+                    if (solution[r][c] === 1) {
+                        const index = r * currentMaze.cols + c;
+                        if (cells[index]) {
+                            setTimeout(() => {
+                                cells[index].classList.add("path");
+                            }, delay);
+                            delay += 50; // Increment delay for path animation
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
