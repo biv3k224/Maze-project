@@ -7,92 +7,85 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             text-align: center;
-            margin: 20px;
-            background-color: #f4f4f4;
+        }
+
+        .container {
+            margin-top: 30px;
         }
 
         .maze-container {
-            display: grid;
+            display: flex;
             justify-content: center;
-            margin-top: 20px;
-            grid-gap: 0;
+            margin: 20px auto;
+            border: 2px solid black;
         }
 
-        .cell {
-            width: 25px;
-            height: 25px;
-            background-color: #fff;
-            border: none;
-        }
-
-        .cell.wall-top {
-            border-top: 2px solid black;
-        }
-
-        .cell.wall-left {
-            border-left: 2px solid black;
-        }
-
-        .cell.start {
-            background-color: green;
-        }
-
-        .cell.end {
-            background-color: blue;
-        }
-
-        .cell.path {
-            background-color: red;
-            animation: animate-path 0.3s ease forwards;
-        }
-
-        @keyframes animate-path {
-            from {
-                background-color: white;
-            }
-            to {
-                background-color: red;
-            }
+        canvas {
+            display: block;
+            border: 2px solid black;
         }
 
         button {
             margin: 10px;
-            padding: 12px 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        select {
+            margin: 10px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        #timer-display {
+            margin-top: 10px;
             font-size: 16px;
-            cursor: pointer;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            color: #333;
         }
 
-        button:hover {
-            background-color: #0056b3;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        #speed-container {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Maze Generator and Solver</h1>
-    <label for="rows">Rows:</label>
-    <input type="number" id="rows" value="10" min="1">
-    <label for="cols">Columns:</label>
-    <input type="number" id="cols" value="10" min="1">
-    <br>
-    <button onclick="generateMaze()">Generate Maze</button>
-    <button onclick="solveMaze()">Solve Maze</button>
-    <div id="maze-container" class="maze-container"></div>
+    <div class="container">
+        <h1>Maze Generator and Solver</h1>
+        <label for="rows">Rows:</label>
+        <input type="number" id="rows" value="10" min="1">
+        <label for="cols">Columns:</label>
+        <input type="number" id="cols" value="10" min="1">
+        <br>
+        <button onclick="generateMaze()">Generate Maze</button>
+
+        <label for="algorithm">Choose Algorithm:</label>
+        <select id="algorithm">
+            <option value="dfs">Depth-First Search (DFS)</option>
+            <option value="bfs">Breadth-First Search (BFS)</option>
+            <option value="dijkstra">Dijkstra's Algorithm</option>
+            <option value="astar">A* Algorithm</option>
+        </select>
+
+        <div id="speed-container">
+            <label for="speed">Animation Speed:</label>
+            <input type="range" id="speed" min="10" max="500" value="100">
+            <span id="speed-display">100 ms</span>
+        </div>
+
+        <button onclick="solveMaze()">Solve Maze</button>
+
+        <div id="maze-container" class="maze-container"></div>
+        <div id="timer-display"></div>
+    </div>
 
     <script>
+        document.getElementById('speed').addEventListener('input', function () {
+            document.getElementById('speed-display').textContent = `${this.value} ms`;
+        });
+
         let currentMaze = null;
 
         async function generateMaze() {
@@ -103,9 +96,9 @@
                 const response = await fetch(`/maze/generate?rows=${rows}&cols=${cols}`, { method: "POST" });
                 if (response.ok) {
                     currentMaze = await response.json();
-                    renderMaze(currentMaze);
+                    renderMazeOnCanvas(currentMaze);
                 } else {
-                    alert("Failed to generate maze.");
+                    alert("Failed to generate maze");
                 }
             } catch (error) {
                 console.error("Error generating maze:", error);
@@ -115,17 +108,32 @@
 
         async function solveMaze() {
             if (!currentMaze) {
-                alert("No maze generated yet!");
+                alert("Generate a maze first!");
                 return;
             }
 
+            const algorithm = document.getElementById("algorithm").value;
+
+            const startTime = performance.now();
+
             try {
-                const response = await fetch("/maze/solve", { method: "POST" });
+                const response = await fetch(`/maze/solve?algorithm=${algorithm}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(currentMaze)
+                });
+
                 if (response.ok) {
                     const solution = await response.json();
-                    renderSolution(solution);
+                    animateSolution(solution.path);
+
+                    const endTime = performance.now();
+                    const timeTaken = (endTime - startTime) / 1000;
+
+                    const timerDisplay = document.getElementById('timer-display');
+                    timerDisplay.textContent = `Maze solved in ${timeTaken.toFixed(2)} seconds`;
                 } else {
-                    alert("Failed to solve maze.");
+                    alert("Failed to solve maze");
                 }
             } catch (error) {
                 console.error("Error solving maze:", error);
@@ -133,45 +141,64 @@
             }
         }
 
-        function renderMaze(maze) {
-            const mazeContainer = document.getElementById("maze-container");
-            mazeContainer.innerHTML = "";
-            mazeContainer.style.gridTemplateColumns = `repeat(${maze.cols}, 25px)`;
+        function renderMazeOnCanvas(maze) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const cellSize = 20;
 
-            for (let r = 0; r < maze.rows; r++) {
-                for (let c = 0; c < maze.cols; c++) {
-                    const cell = document.createElement("div");
-                    cell.classList.add("cell");
+            canvas.width = maze.cols * cellSize;
+            canvas.height = maze.rows * cellSize;
+            document.getElementById('maze-container').innerHTML = '';
+            document.getElementById('maze-container').appendChild(canvas);
 
-                    if (maze.horizontalWalls[r][c]) cell.classList.add("wall-top");
-                    if (maze.verticalWalls[r][c]) cell.classList.add("wall-left");
-                    if (r === 0 && c === 0) cell.classList.add("start");
-                    if (r === maze.rows - 1 && c === maze.cols - 1) cell.classList.add("end");
-
-                    mazeContainer.appendChild(cell);
-                }
-            }
-        }
-
-        function renderSolution(solution) {
-            const mazeContainer = document.getElementById("maze-container");
-            const cells = mazeContainer.querySelectorAll(".cell");
-            let delay = 0;
-
-            for (let r = 0; r < solution.length; r++) {
-                for (let c = 0; c < solution[0].length; c++) {
-                    if (solution[r][c] === 1) {
-                        const index = r * currentMaze.cols + c;
-                        if (cells[index]) {
-                            setTimeout(() => {
-                                cells[index].classList.add("path");
-                            }, delay);
-                            delay += 50; // Increment delay for path animation
-                        }
+            context.fillStyle = 'black';
+            for (let row = 0; row < maze.rows; row++) {
+                for (let col = 0; col < maze.cols; col++) {
+                    if (maze.horizontalWalls[row][col]) {
+                        context.fillRect(col * cellSize, row * cellSize, cellSize, 3);
+                    }
+                    if (maze.verticalWalls[row][col]) {
+                        context.fillRect(col * cellSize, row * cellSize, 3, cellSize);
                     }
                 }
             }
+
+            context.fillStyle = 'red';
+            context.fillRect(0, 0, cellSize, cellSize);
+
+            context.fillStyle = 'green';
+            context.fillRect((maze.cols - 1) * cellSize, (maze.rows - 1) * cellSize, cellSize, cellSize);
         }
+
+        function animateSolution(path) {
+    const canvas = document.querySelector('canvas');
+    const context = canvas.getContext('2d');
+    const cellSize = 20;
+    const speed = document.getElementById('speed').value;
+
+    let index = 0;
+
+    function highlightStep() {
+        if (index < path.length) {
+            const [row, col] = path[index];
+
+            // Calculate the smaller rectangle within the cell to highlight the path
+            const x = col * cellSize + cellSize * 0.3; // Slightly inside the cell
+            const y = row * cellSize + cellSize * 0.3;
+            const size = cellSize * 0.4; // Smaller size for a thinner path
+
+            // Fill the small rectangle in the center of the cell
+            context.fillStyle = 'lightgreen';
+            context.fillRect(x, y, size, size);
+
+            index++;
+            setTimeout(highlightStep, speed);
+        }
+    }
+
+    highlightStep();
+}
+
     </script>
 </body>
 </html>
