@@ -17,33 +17,26 @@ public class MazeController {
     @Autowired
     private MazeService mazeService;
 
-    private Maze currentMaze;
+    private Maze originalMaze; // Store the original maze
+    private Maze currentMaze;  // Store the current (potentially modified) maze
 
     @PostMapping("/generate")
     public ResponseEntity<Maze> generateMaze(@RequestParam int rows, @RequestParam int cols) {
-        currentMaze = mazeService.generateMaze(rows, cols);
+        originalMaze = mazeService.generateMaze(rows, cols);
+        currentMaze = originalMaze; // Reset to original when generating
+        return ResponseEntity.ok(currentMaze);
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<Maze> resetMaze() {
+        currentMaze = originalMaze; // Reset to the original maze
         return ResponseEntity.ok(currentMaze);
     }
 
     @PostMapping("/solve")
-    public ResponseEntity<Map<String, Object>> solveMaze(@RequestParam String algorithm, @RequestBody Maze maze) {
-        int[][] solution;
-        switch (algorithm.toLowerCase()) {
-            case "bfs":
-                solution = mazeService.solveMazeBFS(maze);
-                break;
-            case "dijkstra":
-                solution = mazeService.solveMazeDijkstra(maze);
-                
-                break;
-            case "astar":
-                solution = mazeService.solveMazeAStar(maze);
-                break;
-            case "dfs":
-            default:
-                solution = mazeService.solveMazeDFS(maze);
-        }
-        // Convert solution to a list of coordinates
+    public ResponseEntity<Map<String, Object>> solveMaze(@RequestParam String algorithm) {
+        // Use the current maze (not the request body)
+        int[][] solution = mazeService.solveUsingAlgorithm(currentMaze, algorithm);
         List<int[]> path = convertSolutionToPath(solution);
         Map<String, Object> response = new HashMap<>();
         response.put("path", path);

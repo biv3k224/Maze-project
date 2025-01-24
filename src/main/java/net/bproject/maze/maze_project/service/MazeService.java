@@ -1,9 +1,7 @@
 package net.bproject.maze.maze_project.service;
 
 import org.springframework.stereotype.Service;
-
 import net.bproject.maze.maze_project.model.Maze;
-
 import java.util.*;
 
 @Service
@@ -34,77 +32,103 @@ public class MazeService {
         }
     }
 
-    // Solve the maze using Depth-First Search (DFS)
-    public int[][] solveMazeDFS(Maze maze) {
-        return solveUsingAlgorithm(maze, "dfs");
+    // Solve methods now work on a COPY of the maze to preserve original state
+    public int[][] solveMazeDFS(Maze originalMaze) {
+        Maze mazeCopy = deepCopyMaze(originalMaze);
+        return solveUsingAlgorithm(mazeCopy, "dfs");
     }
 
-    // Solve the maze using Breadth-First Search (BFS)
-    public int[][] solveMazeBFS(Maze maze) {
-        return solveUsingAlgorithm(maze, "bfs");
+    public int[][] solveMazeBFS(Maze originalMaze) {
+        Maze mazeCopy = deepCopyMaze(originalMaze);
+        return solveUsingAlgorithm(mazeCopy, "bfs");
     }
 
-    // Solve the maze using Dijkstra's Algorithm
-    public int[][] solveMazeDijkstra(Maze maze) {
-        return solveUsingAlgorithm(maze, "dijkstra");
+    public int[][] solveMazeDijkstra(Maze originalMaze) {
+        Maze mazeCopy = deepCopyMaze(originalMaze);
+        return solveUsingAlgorithm(mazeCopy, "dijkstra");
     }
 
-    // Solve the maze using A* Algorithm
-    public int[][] solveMazeAStar(Maze maze) {
-        return solveUsingAlgorithm(maze, "astar");
+    public int[][] solveMazeAStar(Maze originalMaze) {
+        Maze mazeCopy = deepCopyMaze(originalMaze);
+        return solveUsingAlgorithm(mazeCopy, "astar");
     }
 
-    private int[][] solveUsingAlgorithm(Maze maze, String algorithm) {
-        // Logic for DFS, BFS, Dijkstra, A*
+    // Deep copy maze to avoid modifying original walls
+    private Maze deepCopyMaze(Maze original) {
+        Maze copy = new Maze(original.getRows(), original.getCols());
+        
+        // Copy horizontal walls
+        for (int i = 0; i < original.getHorizontalWalls().length; i++) {
+            System.arraycopy(
+                original.getHorizontalWalls()[i], 0,
+                copy.getHorizontalWalls()[i], 0,
+                original.getHorizontalWalls()[i].length
+            );
+        }
+        
+        // Copy vertical walls
+        for (int i = 0; i < original.getVerticalWalls().length; i++) {
+            System.arraycopy(
+                original.getVerticalWalls()[i], 0,
+                copy.getVerticalWalls()[i], 0,
+                original.getVerticalWalls()[i].length
+            );
+        }
+        
+        return copy;
+    }
+
+    // Shared solving logic
+    public int[][] solveUsingAlgorithm(Maze maze, String algorithm) {
         int rows = maze.getRows();
         int cols = maze.getCols();
         int[][] solution = new int[rows][cols];
         boolean[][] visited = new boolean[rows][cols];
-        
-        if ("dfs".equalsIgnoreCase(algorithm)) {
-            dfsSolve(0, 0, maze, solution, visited);
-        } else if ("bfs".equalsIgnoreCase(algorithm)) {
-            bfsSolve(maze, solution);
-        } else if ("dijkstra".equalsIgnoreCase(algorithm)) {
-            dijkstraSolve(maze, solution);
-        } else if ("astar".equalsIgnoreCase(algorithm)) {
-            aStarSolve(maze, solution);
+
+        switch (algorithm.toLowerCase()) {
+            case "bfs":
+                bfsSolve(maze, solution);
+                break;
+            case "dijkstra":
+                dijkstraSolve(maze, solution);
+                break;
+            case "astar":
+                aStarSolve(maze, solution);
+                break;
+            case "dfs":
+            default:
+                dfsSolve(0, 0, maze, solution, visited);
         }
         return solution;
     }
 
+    // BFS Implementation
     private void bfsSolve(Maze maze, int[][] solution) {
         int rows = maze.getRows();
         int cols = maze.getCols();
         boolean[][] visited = new boolean[rows][cols];
-        int[][] parent = new int[rows * cols][2]; // To reconstruct the path
         Queue<int[]> queue = new LinkedList<>();
+        int[][] parent = new int[rows * cols][2];
 
-        // Start BFS from the top-left corner
         queue.add(new int[]{0, 0});
         visited[0][0] = true;
-        parent[0] = new int[]{-1, -1}; // Start has no parent
+        parent[0] = new int[]{-1, -1};
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
             int row = current[0];
             int col = current[1];
 
-            // If we reach the bottom-right corner, reconstruct the path
             if (row == rows - 1 && col == cols - 1) {
                 reconstructPath(solution, parent, row, col, cols);
                 return;
             }
 
-            // Explore neighbors
             for (int[] dir : getDirections()) {
                 int newRow = row + dir[0];
                 int newCol = col + dir[1];
-
-                if (isInBounds(newRow, newCol, rows, cols) &&
-                    !visited[newRow][newCol] &&
+                if (isValidMove(maze, visited, newRow, newCol, rows, cols) && 
                     maze.canMove(row, col, dir[0], dir[1])) {
-
                     visited[newRow][newCol] = true;
                     parent[newRow * cols + newCol] = new int[]{row, col};
                     queue.add(new int[]{newRow, newCol});
@@ -112,145 +136,20 @@ public class MazeService {
             }
         }
     }
-
-    // Reconstruct the path from the parent array
-    private void reconstructPath(int[][] solution, int[][] parent, int row, int col, int cols) {
-        while (row != -1 && col != -1) {
-            solution[row][col] = 1; // Mark the solution path
-            int[] prev = parent[row * cols + col];
-            row = prev[0];
-            col = prev[1];
-        }
-    }
-
-
-    private void dijkstraSolve(Maze maze, int[][] solution) {
-        int rows = maze.getRows();
-        int cols = maze.getCols();
-        int[][] distances = new int[rows][cols];
-        boolean[][] visited = new boolean[rows][cols];
-        int[][] parent = new int[rows * cols][2]; // To reconstruct the path
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[2]));
-
-        // Initialize distances to infinity
-        for (int[] row : distances) {
-            Arrays.fill(row, Integer.MAX_VALUE);
-        }
-
-        // Start from the top-left corner
-        distances[0][0] = 0;
-        pq.add(new int[]{0, 0, 0}); // {row, col, cost}
-        parent[0] = new int[]{-1, -1}; // Start has no parent
-
-        while (!pq.isEmpty()) {
-            int[] current = pq.poll();
-            int row = current[0];
-            int col = current[1];
-
-            if (visited[row][col]) continue; // Skip already visited nodes
-            visited[row][col] = true;
-
-            // If we reach the bottom-right corner, reconstruct the path
-            if (row == rows - 1 && col == cols - 1) {
-                reconstructPath(solution, parent, row, col, cols);
-                return;
-            }
-
-            // Explore neighbors
-            for (int[] dir : getDirections()) {
-                int newRow = row + dir[0];
-                int newCol = col + dir[1];
-
-                if (isInBounds(newRow, newCol, rows, cols) &&
-                    !visited[newRow][newCol] &&
-                    maze.canMove(row, col, dir[0], dir[1])) {
-
-                    int newCost = distances[row][col] + 1; // Each step has a cost of 1
-                    if (newCost < distances[newRow][newCol]) {
-                        distances[newRow][newCol] = newCost;
-                        parent[newRow * cols + newCol] = new int[]{row, col};
-                        pq.add(new int[]{newRow, newCol, newCost});
-                    }
-                }
-            }
-        }
-    }
-
-
-    private void aStarSolve(Maze maze, int[][] solution) {
-        int rows = maze.getRows();
-        int cols = maze.getCols();
-        int[][] distances = new int[rows][cols];
-        boolean[][] visited = new boolean[rows][cols];
-        int[][] parent = new int[rows * cols][2]; // To reconstruct the path
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[2]));
-
-        // Initialize distances to infinity
-        for (int[] row : distances) {
-            Arrays.fill(row, Integer.MAX_VALUE);
-        }
-
-        // Start from the top-left corner
-        distances[0][0] = 0;
-        pq.add(new int[]{0, 0, heuristic(0, 0, rows - 1, cols - 1)}); // {row, col, f = g + h}
-        parent[0] = new int[]{-1, -1}; // Start has no parent
-
-        while (!pq.isEmpty()) {
-            int[] current = pq.poll();
-            int row = current[0];
-            int col = current[1];
-
-            if (visited[row][col]) continue; // Skip already visited nodes
-            visited[row][col] = true;
-
-            // If we reach the bottom-right corner, reconstruct the path
-            if (row == rows - 1 && col == cols - 1) {
-                reconstructPath(solution, parent, row, col, cols);
-                return;
-            }
-
-            // Explore neighbors
-            for (int[] dir : getDirections()) {
-                int newRow = row + dir[0];
-                int newCol = col + dir[1];
-
-                if (isInBounds(newRow, newCol, rows, cols) &&
-                    !visited[newRow][newCol] &&
-                    maze.canMove(row, col, dir[0], dir[1])) {
-
-                    int g = distances[row][col] + 1; // Cost to reach neighbor
-                    int h = heuristic(newRow, newCol, rows - 1, cols - 1); // Heuristic to goal
-                    int f = g + h;
-
-                    if (g < distances[newRow][newCol]) { // Found a better path
-                        distances[newRow][newCol] = g;
-                        parent[newRow * cols + newCol] = new int[]{row, col};
-                        pq.add(new int[]{newRow, newCol, f});
-                    }
-                }
-            }
-        }
-    }
-
-    // Heuristic function: Manhattan Distance
-    private int heuristic(int row, int col, int goalRow, int goalCol) {
-        return Math.abs(row - goalRow) + Math.abs(col - goalCol);
-    }
-
-
+    
     private boolean dfsSolve(int row, int col, Maze maze, int[][] solution, boolean[][] visited) {
-        solution[row][col] = 1;
-        visited[row][col] = true;
-
         if (row == maze.getRows() - 1 && col == maze.getCols() - 1) {
+            solution[row][col] = 1;
             return true;
         }
+
+        visited[row][col] = true;
+        solution[row][col] = 1;
 
         for (int[] dir : getDirections()) {
             int newRow = row + dir[0];
             int newCol = col + dir[1];
-            if (isInBounds(newRow, newCol, maze.getRows(), maze.getCols()) &&
-                !visited[newRow][newCol] &&
+            if (isValidMove(maze, visited, newRow, newCol, maze.getRows(), maze.getCols()) &&
                 maze.canMove(row, col, dir[0], dir[1])) {
                 if (dfsSolve(newRow, newCol, maze, solution, visited)) {
                     return true;
@@ -258,20 +157,145 @@ public class MazeService {
             }
         }
 
-        solution[row][col] = 0;
+        solution[row][col] = 0; // Backtrack
         return false;
     }
 
-    private boolean isInBounds(int row, int col, int rows, int cols) {
-        return row >= 0 && row < rows && col >= 0 && col < cols;
+    // A* Implementation
+    private void aStarSolve(Maze maze, int[][] solution) {
+        int rows = maze.getRows();
+        int cols = maze.getCols();
+        int[][] distances = new int[rows][cols];
+        int[][] parent = new int[rows * cols][2]; // Track parent coordinates
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[2]));
+
+        initializeDistances(distances);
+        distances[0][0] = 0;
+        Arrays.fill(parent, new int[]{-1, -1}); // Initialize parents to (-1, -1)
+        parent[0] = new int[]{-1, -1}; // Starting node has no parent
+
+        pq.add(new int[]{0, 0, heuristic(0, 0, rows - 1, cols - 1)});
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int row = current[0];
+            int col = current[1];
+
+            // Skip if a shorter path to this node has already been found
+            if (current[2] > distances[row][col] + heuristic(row, col, rows - 1, cols - 1)) {
+                continue;
+            }
+
+            if (row == rows - 1 && col == cols - 1) {
+                reconstructPath(solution, parent, row, col, cols); // Use parent array
+                return;
+            }
+
+            for (int[] dir : getDirections()) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                if (isInBounds(newRow, newCol, rows, cols) &&
+                    maze.canMove(row, col, dir[0], dir[1])) {
+
+                    int newCost = distances[row][col] + 1; // g-value
+                    if (newCost < distances[newRow][newCol]) {
+                        distances[newRow][newCol] = newCost;
+                        int heuristicValue = heuristic(newRow, newCol, rows - 1, cols - 1);
+                        pq.add(new int[]{newRow, newCol, newCost + heuristicValue});
+                        parent[newRow * cols + newCol] = new int[]{row, col}; // Update parent
+                    }
+                }
+            }
+        }
     }
 
+    private void dijkstraSolve(Maze maze, int[][] solution) {
+        int rows = maze.getRows();
+        int cols = maze.getCols();
+        int[][] distances = new int[rows][cols];
+        boolean[][] visited = new boolean[rows][cols];
+        int[][] parent = new int[rows * cols][2];
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[2]));
+
+        // Initialize distances and parent array
+        for (int[] row : distances) Arrays.fill(row, Integer.MAX_VALUE);
+        for (int[] p : parent) Arrays.fill(p, -1); // Initialize parent to {-1, -1}
+        distances[0][0] = 0;
+        parent[0] = new int[]{-1, -1}; // Starting node has no parent
+
+        pq.add(new int[]{0, 0, 0});
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int row = current[0];
+            int col = current[1];
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            if (row == rows - 1 && col == cols - 1) {
+                reconstructPath(solution, parent, row, col, cols); // Pass parent instead of distances
+                return;
+            }
+
+            for (int[] dir : getDirections()) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                if (isInBounds(newRow, newCol, rows, cols) &&
+                    !visited[newRow][newCol] &&
+                    maze.canMove(row, col, dir[0], dir[1])) {
+
+                    int newDist = distances[row][col] + 1;
+                    if (newDist < distances[newRow][newCol]) {
+                        distances[newRow][newCol] = newDist;
+                        parent[newRow * cols + newCol] = new int[]{row, col}; // Track parent
+                        pq.add(new int[]{newRow, newCol, newDist});
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper methods
+    private boolean isValidMove(Maze maze, boolean[][] visited, int row, int col, int rows, int cols) {
+        return row >= 0 && row < rows && col >= 0 && col < cols && !visited[row][col];
+    }
+
+    private void initializeDistances(int[][] distances) {
+        for (int[] row : distances) Arrays.fill(row, Integer.MAX_VALUE);
+    }
+
+    private int heuristic(int row, int col, int goalRow, int goalCol) {
+        return Math.abs(row - goalRow) + Math.abs(col - goalCol);
+    }
+
+    private void reconstructPath(int[][] solution, int[][] parent, int row, int col, int cols) {
+        List<int[]> tempPath = new ArrayList<>();
+        while (row != -1 && col != -1) {
+            tempPath.add(new int[]{row, col});
+            int index = row * cols + col;
+            int[] prev = parent[index];
+            row = prev[0];
+            col = prev[1];
+        }
+        // Reverse the path to go from start -> end
+        Collections.reverse(tempPath);
+        for (int[] coord : tempPath) {
+            solution[coord[0]][coord[1]] = 1;
+        }
+    }
+
+    // Keep existing helper methods (getDirections(), isInBounds(), etc.)
     private List<int[]> getShuffledDirections() {
-        List<int[]> directions = getDirections();
+        List<int[]> directions = Arrays.asList(
+            new int[]{-1, 0}, // Up
+            new int[]{0, 1},  // Right
+            new int[]{1, 0},  // Down
+            new int[]{0, -1}  // Left
+        );
         Collections.shuffle(directions);
         return directions;
     }
-
     private List<int[]> getDirections() {
         List<int[]> directions = new ArrayList<>();
         directions.add(new int[]{-1, 0}); // Up
@@ -279,5 +303,10 @@ public class MazeService {
         directions.add(new int[]{1, 0}); // Down
         directions.add(new int[]{0, -1}); // Left
         return directions;
+    }
+
+
+    private boolean isInBounds(int row, int col, int rows, int cols) {
+        return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 }
