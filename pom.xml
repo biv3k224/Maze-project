@@ -72,6 +72,13 @@
 				</configuration>
 			</plugin>
 			<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <layout>THIN_LAUNCHER</layout>
+    </configuration>
+</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>

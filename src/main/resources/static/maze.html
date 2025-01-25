@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" href="/main.css" as="style">
+<link rel="prefetch" href="/maze-generator.js" as="script">
     <title>Maze Generator and Solver</title>
     
     <style>
@@ -55,6 +57,8 @@
 </head>
 <body>
     <div class="container">
+		
+		
         <h1>Maze Generator and Solver</h1>
         <label for="rows">Rows:</label>
         <input type="number" id="rows" value="10" min="1" max="63">
